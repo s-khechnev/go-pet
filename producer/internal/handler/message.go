@@ -1,9 +1,15 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"net/http"
+)
+
+var validate = validator.New()
 
 type MessageService interface {
-	Put()
+	Put(request PutMessageRequest) error
 }
 
 type MessageHandler struct {
@@ -14,6 +20,30 @@ func New(service MessageService) *MessageHandler {
 	return &MessageHandler{service: service}
 }
 
-func (h *MessageHandler) Put(c *gin.Context) {
+type PutMessageRequest struct {
+	Message string `json:"message" validate:"required,gte=1,lte=1023"`
+}
 
+func errorResponse(err error) gin.H {
+	return gin.H{"error": err.Error()}
+}
+
+func (h *MessageHandler) Put(c *gin.Context) {
+	var req PutMessageRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	if err := validate.Struct(req); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, errorResponse(err))
+		return
+	}
+
+	if err := h.service.Put(req); err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": req.Message})
 }
