@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"producer/internal/config"
+)
 
 func main() {
-	fmt.Println("Hello world from producer!")
+	cfg := config.GetConfig()
+	fmt.Println("Config:", cfg)
 }
