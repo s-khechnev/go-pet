@@ -25,8 +25,7 @@ type Kafka struct {
 	MessageTopic     string `yaml:"message_topic"`
 	FlushTimeout     int    `yaml:"flush_timeout"`
 
-	DeliveryTimeout time.Duration `yaml:"delivery_timeout"`
-	Acks            int           `yaml:"acks"`
+	Acks int `yaml:"acks"`
 }
 
 const ConfigPathVar = "CONFIG_PATH"

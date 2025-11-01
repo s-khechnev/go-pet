@@ -8,7 +8,6 @@ http_server:
 
 kafka:
   bootstrap_servers: localhost:9090
-  message_topic: messages
+  message_topic: books
   flush_timeout: 500 #ms
-  delivery_timeout: 500ms
   acks: 1

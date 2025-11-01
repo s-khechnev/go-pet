@@ -48,8 +48,7 @@ func main() {
 		&kafka.ConfigMap{
 			"bootstrap.servers": cfg.Kafka.BootstrapServers,
 			"acks":              cfg.Kafka.Acks},
-		cfg.Kafka.FlushTimeout,
-		cfg.Kafka.DeliveryTimeout)
+		cfg.Kafka.FlushTimeout)
 	if err != nil {
 		logger.Error("failed create Kafka producer", slog.String("error", err.Error()))
 		os.Exit(2)
@@ -59,7 +58,7 @@ func main() {
 	msgHandler := handler.New(msgService)
 
 	router := gin.Default()
-	router.POST("/message", msgHandler.Put)
+	router.POST("/books", msgHandler.Post)
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Address, cfg.Port),
