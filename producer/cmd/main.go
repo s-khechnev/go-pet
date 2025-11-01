@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"os/signal"
 	"producer/internal/config"
 	"producer/internal/handler"
+	"producer/internal/queue"
 	"producer/internal/service"
 	"syscall"
 	"time"
@@ -41,7 +43,19 @@ func main() {
 
 	logger.Info("starting")
 
-	msgService := service.New()
+	kafkaProducer, err := queue.NewKafkaProducer(
+		cfg.Kafka.MessageTopic,
+		&kafka.ConfigMap{
+			"bootstrap.servers": cfg.Kafka.BootstrapServers,
+			"acks":              cfg.Kafka.Acks},
+		cfg.Kafka.FlushTimeout,
+		cfg.Kafka.DeliveryTimeout)
+	if err != nil {
+		logger.Error("failed create Kafka producer", slog.String("error", err.Error()))
+		os.Exit(2)
+	}
+
+	msgService := service.New(kafkaProducer)
 	msgHandler := handler.New(msgService)
 
 	router := gin.Default()
@@ -62,13 +76,15 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	logger.Info("Shutdown Server")
+	logger.Info("shutdown Server")
+
+	kafkaProducer.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		logger.Info("Server Shutdown:", err)
+		logger.Info("server Shutdown:", err)
 	}
-	logger.Info("Server exiting")
+	logger.Info("server exiting")
 }

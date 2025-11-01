@@ -21,6 +21,7 @@ func New(service MessageService) *MessageHandler {
 }
 
 type PutMessageRequest struct {
+	IP      string
 	Message string `json:"message" validate:"required,gte=1,lte=1023"`
 }
 
@@ -40,10 +41,12 @@ func (h *MessageHandler) Put(c *gin.Context) {
 		return
 	}
 
+	req.IP = c.RemoteIP()
+
 	if err := h.service.Put(req); err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": req.Message})
+	c.JSON(http.StatusCreated, gin.H{"ip": req.IP, "message": req.Message})
 }

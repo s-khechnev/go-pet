@@ -5,3 +5,10 @@ http_server:
   Address: localhost
   timeout: 5s
   idle_timeout: 60s
+
+kafka:
+  bootstrap_servers: localhost:9090
+  message_topic: messages
+  flush_timeout: 500 #ms
+  delivery_timeout: 100ms
+  acks: 1

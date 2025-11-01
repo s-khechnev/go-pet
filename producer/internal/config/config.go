@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Env        string `yaml:"env"`
 	HttpServer `yaml:"http_server"`
+	Kafka      `yaml:"kafka"`
 }
 
 type HttpServer struct {
@@ -17,6 +18,15 @@ type HttpServer struct {
 	Address     string        `yaml:"address"`
 	Timeout     time.Duration `yaml:"timeout"`
 	IdleTimeout time.Duration `yaml:"idle_timeout"`
+}
+
+type Kafka struct {
+	BootstrapServers string `yaml:"bootstrap_servers"`
+	MessageTopic     string `yaml:"message_topic"`
+	FlushTimeout     int    `yaml:"flush_timeout"`
+
+	DeliveryTimeout time.Duration `yaml:"delivery_timeout"`
+	Acks            int           `yaml:"acks"`
 }
 
 const ConfigPathVar = "CONFIG_PATH"
