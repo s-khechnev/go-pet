@@ -61,8 +61,10 @@ func main() {
 	router.POST("/books", msgHandler.Post)
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", cfg.Address, cfg.Port),
-		Handler: router.Handler(),
+		Addr:         fmt.Sprintf("%s:%d", cfg.Address, cfg.Port),
+		Handler:      router.Handler(),
+		IdleTimeout:  cfg.IdleTimeout,
+		WriteTimeout: cfg.Timeout,
 	}
 
 	go func() {
