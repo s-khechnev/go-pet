@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package analytics;
+
+option go_package = "analytics.v1";
+
+service Analytics {
+  rpc  GetStatistics(StatisticsRequest) returns (StatisticsResponse);
+}
+
+message StatisticsRequest {
+  string title = 1;
+}
+
+message StatisticsResponse {
+  int64 countTextSymbols = 1;
+}
