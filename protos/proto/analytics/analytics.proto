@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package analytics;
 
-option go_package = "analytics.v1";
+option go_package = "analytics.v1;analyticsv1";
 
 service Analytics {
   rpc  GetStatistics(StatisticsRequest) returns (StatisticsResponse);

@@ -4,7 +4,7 @@
 // 	protoc        v3.21.12
 // source: analytics/analytics.proto
 
-package analytics_v1
+package analyticsv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -119,7 +119,7 @@ const file_analytics_analytics_proto_rawDesc = "" +
 	"\x12StatisticsResponse\x12*\n" +
 	"\x10countTextSymbols\x18\x01 \x01(\x03R\x10countTextSymbols2Y\n" +
 	"\tAnalytics\x12L\n" +
-	"\rGetStatistics\x12\x1c.analytics.StatisticsRequest\x1a\x1d.analytics.StatisticsResponseB\x0eZ\fanalytics.v1b\x06proto3"
+	"\rGetStatistics\x12\x1c.analytics.StatisticsRequest\x1a\x1d.analytics.StatisticsResponseB\x1aZ\x18analytics.v1;analyticsv1b\x06proto3"
 
 var (
 	file_analytics_analytics_proto_rawDescOnce sync.Once

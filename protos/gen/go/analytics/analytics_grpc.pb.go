@@ -4,7 +4,7 @@
 // - protoc             v3.21.12
 // source: analytics/analytics.proto
 
-package analytics_v1
+package analyticsv1
 
 import (
 	context "context"
