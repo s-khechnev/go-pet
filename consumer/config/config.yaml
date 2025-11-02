@@ -7,4 +7,7 @@ grpc:
 kafka:
   bootstrap_servers: kafka0:9092
   message_topic: books
-  flush_timeout: 500 #ms
+  group_id: 1
+  poll_timeout: 1s
+  session_timeout: 6s
+  auto_offset_reset: earliest

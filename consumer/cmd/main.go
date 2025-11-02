@@ -3,6 +3,10 @@ package main
 import (
 	"consumer/internal/config"
 	bookgrpc "consumer/internal/grpc"
+	"consumer/internal/queue"
+	"consumer/internal/repository"
+	"context"
+	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"log"
@@ -38,6 +42,28 @@ func main() {
 	slog.SetDefault(logger)
 
 	logger.Info("starting")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	psqlAnalyticsRepo := repository.NewAnalyticsPostgresqlRepo()
+	kafkaConsumer, err := queue.NewConsumer(
+		ctx,
+		psqlAnalyticsRepo,
+		cfg.Kafka.MessageTopic,
+		cfg.Kafka.GroupId,
+		&confluentkafka.ConfigMap{
+			"bootstrap.servers":  cfg.Kafka.BootstrapServers,
+			"session.timeout.ms": int(cfg.SessionTimeout.Milliseconds()),
+			"auto.offset.reset":  cfg.AutoOffsetReset,
+		},
+		cfg.Kafka.PollTimeout,
+	)
+	if err != nil {
+		log.Fatalf("failed create kafka consumer: %v", err)
+	}
+
+	go kafkaConsumer.Run()
 
 	l, err := net.Listen("tcp", ":12345")
 	if err != nil {

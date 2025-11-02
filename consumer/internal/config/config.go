@@ -19,9 +19,12 @@ type GrpcServer struct {
 }
 
 type Kafka struct {
-	BootstrapServers string `yaml:"bootstrap_servers"`
-	MessageTopic     string `yaml:"message_topic"`
-	FlushTimeout     int    `yaml:"flush_timeout"`
+	BootstrapServers string        `yaml:"bootstrap_servers"`
+	MessageTopic     string        `yaml:"message_topic"`
+	GroupId          string        `yaml:"group_id"`
+	PollTimeout      time.Duration `yaml:"poll_timeout"`
+	SessionTimeout   time.Duration `yaml:"session_timeout"`
+	AutoOffsetReset  string        `yaml:"auto_offset_reset"`
 }
 
 const ConfigPathVar = "CONFIG_PATH"
