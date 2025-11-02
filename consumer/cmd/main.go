@@ -1,7 +1,65 @@
 package main
 
-import "fmt"
+import (
+	"consumer/internal/config"
+	bookgrpc "consumer/internal/grpc"
+	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
+	"log"
+	"log/slog"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
+func initLog(env string) *slog.Logger {
+	var logger *slog.Logger
+
+	switch env {
+	case "debug":
+		gin.SetMode(gin.DebugMode)
+		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	case "prod":
+		gin.SetMode(gin.ReleaseMode)
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	default:
+		gin.SetMode(gin.DebugMode)
+		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	}
+
+	return logger
+}
 
 func main() {
-	fmt.Println("Hello world from consumer!")
+	cfg := config.GetConfig()
+
+	logger := initLog(cfg.Env)
+	slog.SetDefault(logger)
+
+	logger.Info("starting")
+
+	l, err := net.Listen("tcp", ":12345")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	bookgrpc.Register(grpcServer)
+
+	go func() {
+		if err := grpcServer.Serve(l); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	logger.Info("shutdown Server")
+
+	grpcServer.GracefulStop()
+
+	logger.Info("server exiting")
 }

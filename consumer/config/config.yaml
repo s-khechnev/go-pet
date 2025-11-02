@@ -1,0 +1,10 @@
+env: debug
+
+grpc:
+  port: 8080
+  timeout: 5s
+
+kafka:
+  bootstrap_servers: kafka0:9092
+  message_topic: books
+  flush_timeout: 500 #ms
