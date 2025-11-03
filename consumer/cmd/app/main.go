@@ -4,7 +4,7 @@ import (
 	"consumer/internal/config"
 	bookgrpc "consumer/internal/grpc"
 	"consumer/internal/queue"
-	"consumer/internal/repository"
+	"consumer/internal/storage/repository"
 	"context"
 	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gin-gonic/gin"

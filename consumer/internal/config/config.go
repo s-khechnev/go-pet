@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"time"
@@ -9,8 +10,9 @@ import (
 
 type Config struct {
 	Env        string `yaml:"env"`
-	GrpcServer `yaml:"http_server"`
+	GrpcServer `yaml:"grpc"`
 	Kafka      `yaml:"kafka"`
+	DB
 }
 
 type GrpcServer struct {
@@ -27,6 +29,14 @@ type Kafka struct {
 	AutoOffsetReset  string        `yaml:"auto_offset_reset"`
 }
 
+type DB struct {
+	Host     string `env:"DB_HOST"`
+	Port     int    `env:"DB_PORT"`
+	Username string `env:"DB_USERNAME"`
+	Password string `env:"DB_PASSWORD"`
+	Database string `env:"DATABASE"`
+}
+
 const ConfigPathVar = "CONFIG_PATH"
 
 func GetConfig() *Config {
@@ -37,6 +47,10 @@ func GetConfig() *Config {
 
 	if _, err := os.Stat(s); os.IsNotExist(err) {
 		log.Fatal(ConfigPathVar, "config file does not exist")
+	}
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("failed to load .env: %v", err)
 	}
 
 	var config Config
