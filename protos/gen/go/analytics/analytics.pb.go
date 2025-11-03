@@ -9,6 +9,7 @@ package analyticsv1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -21,9 +22,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// empty
 type StatisticsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,16 +59,11 @@ func (*StatisticsRequest) Descriptor() ([]byte, []int) {
 	return file_analytics_analytics_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *StatisticsRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
-	}
-	return ""
-}
-
 type StatisticsResponse struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	CountTextSymbols int64                  `protobuf:"varint,1,opt,name=countTextSymbols,proto3" json:"countTextSymbols,omitempty"`
+	CountBooks       int64                  `protobuf:"varint,2,opt,name=countBooks,proto3" json:"countBooks,omitempty"`
+	CountAuthors     int64                  `protobuf:"varint,3,opt,name=countAuthors,proto3" json:"countAuthors,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -109,15 +105,32 @@ func (x *StatisticsResponse) GetCountTextSymbols() int64 {
 	return 0
 }
 
+func (x *StatisticsResponse) GetCountBooks() int64 {
+	if x != nil {
+		return x.CountBooks
+	}
+	return 0
+}
+
+func (x *StatisticsResponse) GetCountAuthors() int64 {
+	if x != nil {
+		return x.CountAuthors
+	}
+	return 0
+}
+
 var File_analytics_analytics_proto protoreflect.FileDescriptor
 
 const file_analytics_analytics_proto_rawDesc = "" +
 	"\n" +
-	"\x19analytics/analytics.proto\x12\tanalytics\")\n" +
-	"\x11StatisticsRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\"@\n" +
+	"\x19analytics/analytics.proto\x12\tanalytics\x1a\x1bgoogle/protobuf/empty.proto\"\x13\n" +
+	"\x11StatisticsRequest\"\x84\x01\n" +
 	"\x12StatisticsResponse\x12*\n" +
-	"\x10countTextSymbols\x18\x01 \x01(\x03R\x10countTextSymbols2Y\n" +
+	"\x10countTextSymbols\x18\x01 \x01(\x03R\x10countTextSymbols\x12\x1e\n" +
+	"\n" +
+	"countBooks\x18\x02 \x01(\x03R\n" +
+	"countBooks\x12\"\n" +
+	"\fcountAuthors\x18\x03 \x01(\x03R\fcountAuthors2Y\n" +
 	"\tAnalytics\x12L\n" +
 	"\rGetStatistics\x12\x1c.analytics.StatisticsRequest\x1a\x1d.analytics.StatisticsResponseB\x1aZ\x18analytics.v1;analyticsv1b\x06proto3"
 

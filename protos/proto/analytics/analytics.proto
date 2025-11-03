@@ -2,16 +2,20 @@ syntax = "proto3";
 
 package analytics;
 
+import "google/protobuf/empty.proto";
+
 option go_package = "analytics.v1;analyticsv1";
 
 service Analytics {
   rpc  GetStatistics(StatisticsRequest) returns (StatisticsResponse);
 }
 
+// empty
 message StatisticsRequest {
-  string title = 1;
 }
 
 message StatisticsResponse {
   int64 countTextSymbols = 1;
+  int64 countBooks = 2;
+  int64 countAuthors = 3;
 }
