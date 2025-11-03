@@ -4,7 +4,7 @@ import (
 	"consumer/internal/config"
 	bookgrpc "consumer/internal/grpc"
 	"consumer/internal/queue"
-	"consumer/internal/storage/repository"
+	"consumer/internal/storage/postgresql"
 	"context"
 	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gin-gonic/gin"
@@ -46,10 +46,14 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	psqlAnalyticsRepo := repository.NewAnalyticsPostgresqlRepo()
+	bookRepo, err := postgresql.NewStorage(ctx, cfg.DB.ConnString)
+	if err != nil {
+		log.Fatalf("failed to connect to postgres: %v", err)
+	}
+
 	kafkaConsumer, err := queue.NewConsumer(
 		ctx,
-		psqlAnalyticsRepo,
+		bookRepo,
 		cfg.Kafka.MessageTopic,
 		cfg.Kafka.GroupId,
 		&confluentkafka.ConfigMap{

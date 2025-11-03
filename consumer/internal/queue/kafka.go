@@ -9,12 +9,16 @@ import (
 	"time"
 )
 
-type AnalyticsRepository interface {
-	SaveCountBook(book entity.Book) error
+//type AnalyticsRepository interface {
+//	SaveCountBook(book entity.Book) error
+//}
+
+type BookRepository interface {
+	SaveBook(ctx context.Context, book entity.Book) error
 }
 
 type Consumer struct {
-	analyticsRepo AnalyticsRepository
+	bookRepo      BookRepository
 	consumer      *kafka.Consumer
 	topic         string
 	context       context.Context
@@ -23,7 +27,7 @@ type Consumer struct {
 
 func NewConsumer(
 	ctx context.Context,
-	repo AnalyticsRepository,
+	bookRepo BookRepository,
 	topic string,
 	groupID string,
 	config *kafka.ConfigMap,
@@ -47,7 +51,7 @@ func NewConsumer(
 	return &Consumer{
 		consumer:      c,
 		topic:         topic,
-		analyticsRepo: repo,
+		bookRepo:      bookRepo,
 		context:       ctx,
 		timeoutOnPoll: timeoutOnPoll,
 	}, nil
@@ -79,9 +83,13 @@ func (c *Consumer) Run() {
 				slog.Error("failed unmarshalling book from json", slog.String("error", err.Error()))
 			}
 
-			err = c.analyticsRepo.SaveCountBook(book)
+			timeoutToSave := time.Second * 3
+			ctx, cancel := context.WithTimeout(c.context, timeoutToSave)
+			defer cancel()
+
+			err = c.bookRepo.SaveBook(ctx, book)
 			if err != nil {
-				slog.Error("failed saving count book", slog.String("error", err.Error()))
+				slog.Error("failed saving book", slog.String("error", err.Error()))
 			}
 
 			_, err = c.consumer.CommitMessage(e)

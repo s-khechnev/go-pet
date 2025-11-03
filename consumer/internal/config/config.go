@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
 	"log"
@@ -30,11 +31,12 @@ type Kafka struct {
 }
 
 type DB struct {
-	Host     string `env:"DB_HOST"`
-	Port     int    `env:"DB_PORT"`
-	Username string `env:"DB_USERNAME"`
-	Password string `env:"DB_PASSWORD"`
-	Database string `env:"DATABASE"`
+	ConnString string
+	Host       string `env:"DB_HOST"`
+	Port       int    `env:"DB_PORT"`
+	Username   string `env:"DB_USERNAME"`
+	Password   string `env:"DB_PASSWORD"`
+	Database   string `env:"DATABASE"`
 }
 
 const ConfigPathVar = "CONFIG_PATH"
@@ -57,6 +59,14 @@ func GetConfig() *Config {
 	if err := cleanenv.ReadConfig(s, &config); err != nil {
 		log.Fatalf("cannot read config file: %s", err)
 	}
+
+	config.DB.ConnString = fmt.Sprintf("postgres://%s:%s@%s:%d/%s",
+		config.DB.Username,
+		config.DB.Password,
+		config.DB.Host,
+		config.DB.Port,
+		config.DB.Database,
+	)
 
 	return &config
 }
