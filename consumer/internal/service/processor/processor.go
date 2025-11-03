@@ -2,12 +2,14 @@ package processor
 
 import (
 	"consumer/internal/entity"
+	"context"
 	"log/slog"
 	"strings"
+	"time"
 )
 
 type BookRepository interface {
-	Save(book *entity.Book) error
+	SaveBook(ctx context.Context, b entity.Book) error
 }
 
 type BookProcessorService struct {
@@ -20,13 +22,19 @@ func NewBookProcessorService(repo BookRepository) *BookProcessorService {
 	}
 }
 
-func (s *BookProcessorService) Process(book entity.Book) error {
+func (s *BookProcessorService) Process(ctx context.Context, book entity.Book) error {
 	// some super complicated processing
 	book.Text = strings.ToUpper(book.Text)
 
-	if err := s.bookRepository.Save(&book); err != nil {
+	timeoutToSave := time.Second * 3
+	ctx, cancel := context.WithTimeout(ctx, timeoutToSave)
+	defer cancel()
+
+	if err := s.bookRepository.SaveBook(ctx, book); err != nil {
 		slog.Error("failed to save book", slog.String("id", book.Id), slog.String("error", err.Error()))
 		return err
 	}
+	slog.Info("book is saved", slog.String("id", book.Id), slog.String("text", book.Text))
+
 	return nil
 }

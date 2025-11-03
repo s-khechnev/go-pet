@@ -9,16 +9,12 @@ import (
 	"time"
 )
 
-//type AnalyticsRepository interface {
-//	SaveCountBook(book entity.Book) error
-//}
-
-type BookRepository interface {
-	SaveBook(ctx context.Context, book entity.Book) error
+type BookProcessor interface {
+	Process(ctx context.Context, book entity.Book) error
 }
 
 type Consumer struct {
-	bookRepo      BookRepository
+	bookProcessor BookProcessor
 	consumer      *kafka.Consumer
 	topic         string
 	context       context.Context
@@ -27,7 +23,7 @@ type Consumer struct {
 
 func NewConsumer(
 	ctx context.Context,
-	bookRepo BookRepository,
+	bookProcessor BookProcessor,
 	topic string,
 	groupID string,
 	config *kafka.ConfigMap,
@@ -51,7 +47,7 @@ func NewConsumer(
 	return &Consumer{
 		consumer:      c,
 		topic:         topic,
-		bookRepo:      bookRepo,
+		bookProcessor: bookProcessor,
 		context:       ctx,
 		timeoutOnPoll: timeoutOnPoll,
 	}, nil
@@ -83,13 +79,9 @@ func (c *Consumer) Run() {
 				slog.Error("failed unmarshalling book from json", slog.String("error", err.Error()))
 			}
 
-			timeoutToSave := time.Second * 3
-			ctx, cancel := context.WithTimeout(c.context, timeoutToSave)
-			defer cancel()
-
-			err = c.bookRepo.SaveBook(ctx, book)
+			err = c.bookProcessor.Process(c.context, book)
 			if err != nil {
-				slog.Error("failed saving book", slog.String("error", err.Error()))
+				slog.Error("failed processing book", slog.String("error", err.Error()))
 			}
 
 			_, err = c.consumer.CommitMessage(e)

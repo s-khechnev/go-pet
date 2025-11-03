@@ -4,6 +4,7 @@ import (
 	"consumer/internal/config"
 	bookgrpc "consumer/internal/grpc"
 	"consumer/internal/queue"
+	"consumer/internal/service/processor"
 	"consumer/internal/storage/postgresql"
 	"context"
 	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
@@ -50,10 +51,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to connect to postgres: %v", err)
 	}
+	bookProcessorService := processor.NewBookProcessorService(bookRepo)
 
 	kafkaConsumer, err := queue.NewConsumer(
 		ctx,
-		bookRepo,
+		bookProcessorService,
 		cfg.Kafka.MessageTopic,
 		cfg.Kafka.GroupId,
 		&confluentkafka.ConfigMap{
