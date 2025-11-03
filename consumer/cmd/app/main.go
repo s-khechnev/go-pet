@@ -4,6 +4,7 @@ import (
 	"consumer/internal/config"
 	bookgrpc "consumer/internal/grpc"
 	"consumer/internal/queue"
+	"consumer/internal/service/analytics"
 	"consumer/internal/service/processor"
 	"consumer/internal/storage/postgresql"
 	"context"
@@ -77,7 +78,9 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	bookgrpc.Register(grpcServer)
+	analyticsService := analytics.NewBookAnalyticsService(bookRepo)
+	serverApi := bookgrpc.NewServerApi(analyticsService)
+	bookgrpc.Register(grpcServer, serverApi)
 
 	go func() {
 		if err := grpcServer.Serve(l); err != nil {

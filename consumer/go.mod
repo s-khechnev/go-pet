@@ -9,7 +9,7 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/joho/godotenv v1.5.1
-	github.com/s-khechnev/pet-project/protos v0.0.0-20251101235143-523981f92373
+	github.com/s-khechnev/pet-project/protos v0.0.0-20251103185730-8018eff382d5
 	google.golang.org/grpc v1.76.0
 )
 

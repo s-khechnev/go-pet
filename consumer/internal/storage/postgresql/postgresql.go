@@ -73,3 +73,30 @@ func (s *BookStorage) SaveBook(ctx context.Context, b entity.Book) error {
 
 	return tx.Commit(ctx)
 }
+
+func (s *BookStorage) GetCountBooks(ctx context.Context) (int64, error) {
+	var count int64
+	err := s.pool.QueryRow(ctx, "SELECT COUNT(id) FROM books").Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query count books: %w", err)
+	}
+	return count, nil
+}
+
+func (s *BookStorage) GetCountTextSymbols(ctx context.Context) (int64, error) {
+	var count int64
+	err := s.pool.QueryRow(ctx, "SELECT SUM(length(text)) FROM books").Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query count text symbols: %w", err)
+	}
+	return count, nil
+}
+
+func (s *BookStorage) GetCountAuthors(ctx context.Context) (int64, error) {
+	var count int64
+	err := s.pool.QueryRow(ctx, "SELECT COUNT(id) FROM authors").Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query count authors: %w", err)
+	}
+	return count, nil
+}
