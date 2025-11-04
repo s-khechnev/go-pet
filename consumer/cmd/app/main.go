@@ -8,6 +8,7 @@ import (
 	"consumer/internal/service/processor"
 	"consumer/internal/storage/postgresql"
 	"context"
+	"fmt"
 	confluentkafka "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
@@ -72,7 +73,7 @@ func main() {
 
 	go kafkaConsumer.Run()
 
-	l, err := net.Listen("tcp", ":12345")
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GrpcServer.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
