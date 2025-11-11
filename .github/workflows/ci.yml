@@ -35,4 +35,4 @@ jobs:
           go build work
 
       - name: Run tests
-        run: go test work
+        run: go test -race work
