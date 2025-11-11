@@ -11,6 +11,8 @@ PostgreSQL и одновременно предоставляет gRPC API се�
 
 ### Сборка
 Перед сборкой необходимо создать `.env` в корне репо и в [consumer](./consumer/), основываясь на `.env.example`
-```
+```bash
+cp .env.example .env
+cp ./consumer/.env.example .env
 docker-compose up
 ```
