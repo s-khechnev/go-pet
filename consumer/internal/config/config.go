@@ -10,10 +10,10 @@ import (
 )
 
 type Config struct {
-	Env        string `yaml:"env"`
-	GrpcServer `yaml:"grpc"`
-	Kafka      `yaml:"kafka"`
-	DB
+	Env        string     `yaml:"env"`
+	GrpcServer GrpcServer `yaml:"grpc"`
+	Kafka      Kafka      `yaml:"kafka"`
+	DB         DB
 }
 
 type GrpcServer struct {

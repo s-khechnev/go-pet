@@ -61,10 +61,10 @@ func main() {
 	router.POST("/books", msgHandler.Post)
 
 	server := &http.Server{
-		Addr:         fmt.Sprintf("%s:%d", cfg.Address, cfg.Port),
+		Addr:         fmt.Sprintf("%s:%d", cfg.HttpServer.Address, cfg.HttpServer.Port),
 		Handler:      router.Handler(),
-		IdleTimeout:  cfg.IdleTimeout,
-		WriteTimeout: cfg.Timeout,
+		IdleTimeout:  cfg.HttpServer.IdleTimeout,
+		WriteTimeout: cfg.HttpServer.Timeout,
 	}
 
 	go func() {
@@ -85,7 +85,7 @@ func main() {
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		logger.Info("server Shutdown:", err)
+		logger.Info("server Shutdown:", slog.String("error", err.Error()))
 	}
 	logger.Info("server exiting")
 }

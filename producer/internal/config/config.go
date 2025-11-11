@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	Env        string `yaml:"env"`
-	HttpServer `yaml:"http_server"`
-	Kafka      `yaml:"kafka"`
+	Env        string     `yaml:"env"`
+	HttpServer HttpServer `yaml:"http_server"`
+	Kafka      Kafka      `yaml:"kafka"`
 }
 
 type HttpServer struct {

@@ -22,7 +22,7 @@ func New(producer BookProducer) *BookService {
 	}
 }
 
-var ProducerError = errors.New("produce book error")
+var ErrProduceBook = errors.New("produce book error")
 
 func (s *BookService) Post(req handler.PostBookRequest) (string, error) {
 	id := uuid.New().String()
@@ -35,7 +35,7 @@ func (s *BookService) Post(req handler.PostBookRequest) (string, error) {
 
 	if err := s.bookProducer.Produce(book); err != nil {
 		slog.Error("failed to push book", slog.String("error", err.Error()))
-		return uuid.Nil.String(), ProducerError
+		return uuid.Nil.String(), ErrProduceBook
 	}
 
 	return id, nil

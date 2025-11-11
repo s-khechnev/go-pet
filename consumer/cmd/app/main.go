@@ -62,8 +62,8 @@ func main() {
 		cfg.Kafka.GroupId,
 		&confluentkafka.ConfigMap{
 			"bootstrap.servers":  cfg.Kafka.BootstrapServers,
-			"session.timeout.ms": int(cfg.SessionTimeout.Milliseconds()),
-			"auto.offset.reset":  cfg.AutoOffsetReset,
+			"session.timeout.ms": int(cfg.Kafka.SessionTimeout.Milliseconds()),
+			"auto.offset.reset":  cfg.Kafka.AutoOffsetReset,
 		},
 		cfg.Kafka.PollTimeout,
 	)

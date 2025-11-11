@@ -59,7 +59,10 @@ func Test(t *testing.T) {
 	if err := goose.Up(db, "../../migrations"); err != nil {
 		log.Fatalf("failed to up migrations: %s", err)
 	}
-	db.Close()
+
+	if err := db.Close(); err != nil {
+		log.Fatalf("failed to close connection: %s", err)
+	}
 
 	storage, err := postgresql.NewStorage(ctx, connStr)
 	if err != nil {

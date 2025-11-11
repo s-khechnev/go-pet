@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"log/slog"
 	"strings"
 )
 
@@ -33,7 +34,11 @@ func (s *BookStorage) SaveBook(ctx context.Context, b entity.Book) error {
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		if err := tx.Rollback(ctx); err != nil {
+			slog.Error("failed to rollback transaction", slog.String("error", err.Error()))
+		}
+	}()
 
 	_, err = tx.Exec(ctx,
 		"INSERT INTO books (id, title, text) VALUES ($1, $2, $3)",

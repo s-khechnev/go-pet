@@ -48,13 +48,13 @@ func NewKafkaProducer(topic string, config *kafka.ConfigMap, flushTimeout int) (
 	}, nil
 }
 
-var JsonMarshalingError = errors.New("marshaling error")
+var ErrJsonMarshaling = errors.New("marshaling error")
 
 func (p *KafkaProducer) Produce(book entity.Book) error {
 	bookJson, err := json.Marshal(book)
 	if err != nil {
 		slog.Error("failed marshal book", slog.String("error", err.Error()))
-		return JsonMarshalingError
+		return ErrJsonMarshaling
 	}
 
 	err = p.producer.Produce(&kafka.Message{
