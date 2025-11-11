@@ -36,6 +36,10 @@ func (s *BookStorage) SaveBook(ctx context.Context, b entity.Book) error {
 	}
 	defer func() {
 		if err := tx.Rollback(ctx); err != nil {
+			if errors.Is(err, pgx.ErrTxClosed) {
+				return
+			}
+			
 			slog.Error("failed to rollback transaction", slog.String("error", err.Error()))
 		}
 	}()
