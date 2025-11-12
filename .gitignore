@@ -1,3 +1,6 @@
 .idea/
 .env
 postgres_data/
+consumer_logs/
+producer_logs/
+grafana_storage/

@@ -40,6 +40,8 @@ services:
       CONFIG_PATH: ./config/config.yaml
     depends_on:
       - kafka0
+    volumes:
+      - ./producer_logs:/app/logs
 
   db:
     image: postgres:18
@@ -72,3 +74,27 @@ services:
         condition: service_healthy
       kafka0:
         condition: service_started
+    volumes:
+      - ./consumer_logs:/app/logs
+
+  grafana:
+    image: grafana/grafana:12.2.1
+    ports:
+      - ${GRAFANA_PORT}:3000
+    volumes:
+      - ./infra/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./grafana_storage:/var/lib/grafana
+    user: "${UID}:${GID}"
+
+  loki:
+    image: grafana/loki:3.5.7
+    ports:
+      - ${LOKI_PORT}:3100
+    command: "-config.file=/etc/loki/local-config.yaml"
+
+  alloy:
+    image: grafana/alloy:v1.11.3
+    volumes:
+      - ./infra/alloy-config.alloy:/etc/alloy/config.alloy
+      - ./producer_logs:/var/log/producer
+      - ./consumer_logs:/var/log/consumer

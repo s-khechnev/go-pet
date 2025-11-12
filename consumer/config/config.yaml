@@ -1,4 +1,4 @@
-env: debug
+env: prod
 
 grpc:
   port: 8080

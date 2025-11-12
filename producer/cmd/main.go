@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/gin-gonic/gin"
+	"io"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -25,8 +27,19 @@ func initLog(env string) *slog.Logger {
 		gin.SetMode(gin.DebugMode)
 		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	case "prod":
-		gin.SetMode(gin.ReleaseMode)
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+		gin.SetMode(gin.DebugMode)
+
+		if err := os.MkdirAll("logs", os.ModeDir|os.ModePerm); err != nil {
+			log.Fatalf("Failed to create logs directory: %v", err)
+		}
+
+		logFile, err := os.OpenFile("logs/producer.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatalf("Failed to open log file: %v", err)
+		}
+
+		w := io.MultiWriter(os.Stdout, logFile)
+		logger = slog.New(slog.NewJSONHandler(w, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	default:
 		gin.SetMode(gin.DebugMode)
 		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
